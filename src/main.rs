@@ -6,9 +6,12 @@ const CONTROL_REQUEST: u8 = 0x8c;
 const QUERY_REQUEST: u8 = 0x83;
 const CATEGORY: u8 = 0x00;
 const POWER_FUNCTION: u8 = 0x00;
+const INPUT_SELECT_FUNCTION: u8 = 0x02;
 const VOLUME_CONTROL_FUNCTION: u8 = 0x05;
 const BRIGHTNESS_CONTROL_FUNCTION: u8 = 0x24;
 const MUTING_FUNCTION: u8 = 0x06;
+
+const INPUT_TYPE_HDMI: u8 = 0x04;
 
 const RESPONSE_HEADER: u8 = 0x70;
 const RESPONSE_ANSWER: u8 = 0x00;
@@ -72,6 +75,18 @@ fn volume_down(port: &mut Box<dyn serialport::SerialPort>) {
         0x03,
         0x00,
         0x01,
+    ];
+    write_command(port, args);
+}
+
+fn input_select(port: &mut Box<dyn serialport::SerialPort>, input_type: u8, input_num: u8) {
+    let args = vec![
+        CONTROL_REQUEST,
+        CATEGORY,
+        INPUT_SELECT_FUNCTION,
+        0x03,
+        input_type,
+        input_num,
     ];
     write_command(port, args);
 }
@@ -172,6 +187,11 @@ fn main() {
         "volume-up" => volume_up(&mut port),
         "volume-down" => volume_down(&mut port),
         "mute" => mute_toggle(&mut port),
+        "input-hdmi-1" => input_select(&mut port, INPUT_TYPE_HDMI, 1),
+        "input-hdmi-2" => input_select(&mut port, INPUT_TYPE_HDMI, 2),
+        "input-hdmi-3" => input_select(&mut port, INPUT_TYPE_HDMI, 3),
+        "input-hdmi-4" => input_select(&mut port, INPUT_TYPE_HDMI, 4),
+        "input-hdmi-5" => input_select(&mut port, INPUT_TYPE_HDMI, 5),
         "status" => print_status(&mut port),
         _ => {
             eprintln!("error: invalid action");
