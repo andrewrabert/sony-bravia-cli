@@ -55,6 +55,30 @@ fn brightness_down(port: &mut Box<dyn serialport::SerialPort>) {
     write_command(port, args);
 }
 
+fn brightness_min(port: &mut Box<dyn serialport::SerialPort>) {
+    let args = vec![
+        CONTROL_REQUEST,
+        CATEGORY,
+        BRIGHTNESS_CONTROL_FUNCTION,
+        0x03,
+        0x01,
+        0x00,
+    ];
+    write_command(port, args);
+}
+
+fn brightness_max(port: &mut Box<dyn serialport::SerialPort>) {
+    let args = vec![
+        CONTROL_REQUEST,
+        CATEGORY,
+        BRIGHTNESS_CONTROL_FUNCTION,
+        0x03,
+        0x01,
+        0x32,
+    ];
+    write_command(port, args);
+}
+
 fn volume_up(port: &mut Box<dyn serialport::SerialPort>) {
     let args = vec![
         CONTROL_REQUEST,
@@ -184,6 +208,8 @@ fn main() {
         "power" => power_toggle(&mut port),
         "brightness-up" => brightness_up(&mut port),
         "brightness-down" => brightness_down(&mut port),
+        "brightness-min" => brightness_min(&mut port),
+        "brightness-max" => brightness_max(&mut port),
         "volume-up" => volume_up(&mut port),
         "volume-down" => volume_down(&mut port),
         "mute" => mute_toggle(&mut port),
