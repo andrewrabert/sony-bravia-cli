@@ -8,6 +8,8 @@ const CATEGORY: u8 = 0x00;
 const POWER_FUNCTION: u8 = 0x00;
 const INPUT_SELECT_FUNCTION: u8 = 0x02;
 const VOLUME_CONTROL_FUNCTION: u8 = 0x05;
+const PICTURE_FUNCTION: u8 = 0x0d;
+const DISPLAY_FUNCTION: u8 = 0x0f;
 const BRIGHTNESS_CONTROL_FUNCTION: u8 = 0x24;
 const MUTING_FUNCTION: u8 = 0x06;
 
@@ -28,6 +30,26 @@ fn power_on(port: &mut Box<dyn serialport::SerialPort>) {
 
 fn power_off(port: &mut Box<dyn serialport::SerialPort>) {
     let args = vec![CONTROL_REQUEST, CATEGORY, POWER_FUNCTION, 0x02, 0x00];
+    write_command(port, args);
+}
+
+fn picture_toggle(port: &mut Box<dyn serialport::SerialPort>) {
+    let args = vec![CONTROL_REQUEST, CATEGORY, PICTURE_FUNCTION, 0x02, 0x00];
+    write_command(port, args);
+}
+
+fn picture_on(port: &mut Box<dyn serialport::SerialPort>) {
+    let args = vec![CONTROL_REQUEST, CATEGORY, PICTURE_FUNCTION, 0x02, 0x01];
+    write_command(port, args);
+}
+
+fn picture_off(port: &mut Box<dyn serialport::SerialPort>) {
+    let args = vec![CONTROL_REQUEST, CATEGORY, PICTURE_FUNCTION, 0x02, 0x00];
+    write_command(port, args);
+}
+
+fn display_toggle(port: &mut Box<dyn serialport::SerialPort>) {
+    let args = vec![CONTROL_REQUEST, CATEGORY, DISPLAY_FUNCTION, 0x02, 0x00];
     write_command(port, args);
 }
 
@@ -206,6 +228,10 @@ fn main() {
         "on" => power_on(&mut port),
         "off" => power_off(&mut port),
         "power" => power_toggle(&mut port),
+        "picture" => picture_toggle(&mut port),
+        "picture-on" => picture_on(&mut port),
+        "picture-off" => picture_off(&mut port),
+        "display" => display_toggle(&mut port),
         "brightness-up" => brightness_up(&mut port),
         "brightness-down" => brightness_down(&mut port),
         "brightness-min" => brightness_min(&mut port),
