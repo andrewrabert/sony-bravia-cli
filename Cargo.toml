@@ -4,4 +4,5 @@ version = "0.3.0"
 edition = "2024"
 
 [dependencies]
+clap = "4.5.36"
 serialport = {version = "4.7.1", default-features = false}

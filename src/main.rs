@@ -1,6 +1,7 @@
-use std::env;
 use std::io::Write;
 use std::time::Duration;
+
+use clap::{arg, Command};
 
 const CONTROL_REQUEST: u8 = 0x8c;
 const QUERY_REQUEST: u8 = 0x83;
@@ -166,10 +167,6 @@ fn print_status(port: &mut Box<dyn serialport::SerialPort>) {
     }
 }
 
-fn print_usage() {
-    eprintln!("usage: DEVICE [on|off|power|volume-up|volume-down|mute|status]");
-}
-
 fn write_command(port: &mut Box<dyn serialport::SerialPort>, contents: Vec<u8>) -> Vec<u8> {
     let mut vec = contents.clone();
     let c = checksum(&vec);
@@ -209,45 +206,128 @@ fn write_command(port: &mut Box<dyn serialport::SerialPort>, contents: Vec<u8>) 
     }
 }
 
-fn main() {
-    let args: Vec<String> = env::args().collect();
-    match args.len() {
-        3 => {}
-        _ => {
-            print_usage();
-            eprintln!("error: unexpected argument(s)");
-            std::process::exit(1);
-        }
-    }
+fn cli() -> Command {
+    Command::new("sony-bravia-cli")
+        .arg(arg!(--dev <DEVICE>).required(true))
+        .subcommand_required(true)
+        .arg_required_else_help(true)
+        .subcommand(
+            Command::new("power")
+                .arg(arg!(<ACTION> "The action to perform").value_parser(["on", "off", "toggle"])),
+        )
+        .subcommand(
+            Command::new("picture")
+                .arg(arg!(<ACTION> "The action to perform").value_parser(["on", "off", "toggle"])),
+        )
+        .subcommand(
+            Command::new("volume")
+                .arg(arg!(<ACTION> "The action to perform").value_parser(["down", "up"])),
+        )
+        .subcommand(
+            Command::new("mute")
+                .arg(arg!(<ACTION> "The action to perform").value_parser(["toggle"])),
+        )
+        .subcommand(
+            Command::new("display")
+                .arg(arg!(<ACTION> "The action to perform").value_parser(["toggle"])),
+        )
+        .subcommand(
+            Command::new("brightness").arg(
+                arg!(<ACTION> "The action to perform").value_parser(["down", "up", "min", "max"]),
+            ),
+        )
+        .subcommand(
+            Command::new("input-hdmi")
+                .arg(arg!(<PORT> "The action to perform").value_parser(clap::value_parser!(u8))),
+        )
+        .subcommand(Command::new("status"))
+}
 
-    let mut port = serialport::new(&args[1], 9600)
+fn main() {
+    let matches = cli().get_matches();
+    let mut port = serialport::new(matches.get_one::<String>("dev").expect("required"), 9600)
         .timeout(Duration::from_millis(500))
         .open()
         .expect("Failed to open port.");
-    match &args[2][..] {
-        "on" => power_on(&mut port),
-        "off" => power_off(&mut port),
-        "power" => power_toggle(&mut port),
-        "picture" => picture_toggle(&mut port),
-        "picture-on" => picture_on(&mut port),
-        "picture-off" => picture_off(&mut port),
-        "display" => display_toggle(&mut port),
-        "brightness-up" => brightness_up(&mut port),
-        "brightness-down" => brightness_down(&mut port),
-        "brightness-min" => brightness_min(&mut port),
-        "brightness-max" => brightness_max(&mut port),
-        "volume-up" => volume_up(&mut port),
-        "volume-down" => volume_down(&mut port),
-        "mute" => mute_toggle(&mut port),
-        "input-hdmi-1" => input_select(&mut port, INPUT_TYPE_HDMI, 1),
-        "input-hdmi-2" => input_select(&mut port, INPUT_TYPE_HDMI, 2),
-        "input-hdmi-3" => input_select(&mut port, INPUT_TYPE_HDMI, 3),
-        "input-hdmi-4" => input_select(&mut port, INPUT_TYPE_HDMI, 4),
-        "input-hdmi-5" => input_select(&mut port, INPUT_TYPE_HDMI, 5),
-        "status" => print_status(&mut port),
-        _ => {
-            eprintln!("error: invalid action");
-            std::process::exit(1);
+    match matches.subcommand() {
+        Some(("power", sub_matches)) => {
+            match sub_matches
+                .get_one::<String>("ACTION")
+                .expect("required")
+                .as_str()
+            {
+                "on" => power_on(&mut port),
+                "off" => power_off(&mut port),
+                "toggle" => power_toggle(&mut port),
+                _ => unreachable!(),
+            };
         }
-    };
+        Some(("input-hdmi", sub_matches)) => {
+            input_select(
+                &mut port,
+                INPUT_TYPE_HDMI,
+                *sub_matches.get_one::<u8>("PORT").expect("required"),
+            );
+        }
+        Some(("picture", sub_matches)) => {
+            match sub_matches
+                .get_one::<String>("ACTION")
+                .expect("required")
+                .as_str()
+            {
+                "on" => picture_on(&mut port),
+                "off" => picture_off(&mut port),
+                "toggle" => picture_toggle(&mut port),
+                _ => unreachable!(),
+            };
+        }
+        Some(("brightness", sub_matches)) => {
+            match sub_matches
+                .get_one::<String>("ACTION")
+                .expect("required")
+                .as_str()
+            {
+                "down" => brightness_down(&mut port),
+                "up" => brightness_up(&mut port),
+                "min" => brightness_min(&mut port),
+                "max" => brightness_max(&mut port),
+                _ => unreachable!(),
+            };
+        }
+        Some(("volume", sub_matches)) => {
+            match sub_matches
+                .get_one::<String>("ACTION")
+                .expect("required")
+                .as_str()
+            {
+                "down" => volume_down(&mut port),
+                "up" => volume_up(&mut port),
+                _ => unreachable!(),
+            };
+        }
+        Some(("display", sub_matches)) => {
+            match sub_matches
+                .get_one::<String>("ACTION")
+                .expect("required")
+                .as_str()
+            {
+                "toggle" => display_toggle(&mut port),
+                _ => unreachable!(),
+            };
+        }
+        Some(("mute", sub_matches)) => {
+            match sub_matches
+                .get_one::<String>("ACTION")
+                .expect("required")
+                .as_str()
+            {
+                "toggle" => mute_toggle(&mut port),
+                _ => unreachable!(),
+            };
+        }
+        Some(("status", _sub_matches)) => {
+            print_status(&mut port);
+        }
+        _ => unreachable!(),
+    }
 }
