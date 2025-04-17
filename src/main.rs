@@ -174,7 +174,7 @@ fn write_command(port: &mut Box<dyn serialport::SerialPort>, contents: Vec<u8>) 
     port.write_all(&vec).unwrap();
 
     let mut resp_buf = vec![0; 3];
-    port.read(resp_buf.as_mut_slice())
+    port.read_exact(resp_buf.as_mut_slice())
         .expect("failure to read response");
 
     if resp_buf[0] != RESPONSE_HEADER {
@@ -187,7 +187,7 @@ fn write_command(port: &mut Box<dyn serialport::SerialPort>, contents: Vec<u8>) 
     }
     if vec[0] == QUERY_REQUEST {
         let mut resp_data_buf = vec![0; resp_buf[2] as usize];
-        port.read(resp_data_buf.as_mut_slice())
+        port.read_exact(resp_data_buf.as_mut_slice())
             .expect("failure to read response data");
         let resp_checksum = resp_data_buf.pop().expect("error");
         resp_buf.extend(resp_data_buf.clone());
