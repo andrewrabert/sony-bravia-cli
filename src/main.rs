@@ -19,9 +19,9 @@ const INPUT_TYPE_HDMI: u8 = 0x04;
 const RESPONSE_HEADER: u8 = 0x70;
 const RESPONSE_ANSWER: u8 = 0x00;
 
-fn checksum(command: &Vec<u8>) -> u8 {
+fn checksum(command: &[u8]) -> u8 {
     let s: u8 = command.iter().sum();
-    return s % 255;
+    s % 255
 }
 
 fn power_on(port: &mut Box<dyn serialport::SerialPort>) {
@@ -146,7 +146,7 @@ fn mute_toggle(port: &mut Box<dyn serialport::SerialPort>) {
 fn is_powered_on(port: &mut Box<dyn serialport::SerialPort>) -> bool {
     let args = vec![QUERY_REQUEST, CATEGORY, POWER_FUNCTION, 0xff, 0xff];
     let data = write_command(port, args);
-    return data[0] == 1;
+    data[0] == 1
 }
 
 fn power_toggle(port: &mut Box<dyn serialport::SerialPort>) {
@@ -195,14 +195,14 @@ fn write_command(port: &mut Box<dyn serialport::SerialPort>, contents: Vec<u8>) 
             eprintln!("error: invalid response checksum");
             std::process::exit(1);
         }
-        return resp_data_buf;
+        resp_data_buf
     } else {
         let resp_checksum = resp_buf.pop().expect("error");
         if resp_checksum != checksum(&resp_buf) {
             eprintln!("error: invalid response checksum");
             std::process::exit(1);
         }
-        return vec![0; 0];
+        vec![0; 0]
     }
 }
 
