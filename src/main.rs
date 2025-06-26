@@ -20,7 +20,7 @@ const RESPONSE_HEADER: u8 = 0x70;
 const RESPONSE_ANSWER: u8 = 0x00;
 
 fn checksum(command: &[u8]) -> u8 {
-    let s: u8 = command.iter().sum();
+    let s: u8 = command.iter().fold(0u8, |acc, &b| acc.wrapping_add(b));
     s % 255
 }
 
