@@ -280,13 +280,13 @@ async fn start_http_server(device_path: String, host: String, port: u16) -> Resu
 
     let app = Router::new()
         .route("/status", get(get_status))
-        .route("/power/:action", post(power_control))
-        .route("/picture/:action", post(picture_control))
-        .route("/volume/:action", post(volume_control))
-        .route("/brightness/:action", post(brightness_control))
+        .route("/power/{action}", post(power_control))
+        .route("/picture/{action}", post(picture_control))
+        .route("/volume/{action}", post(volume_control))
+        .route("/brightness/{action}", post(brightness_control))
         .route("/display/toggle", post(display_control))
         .route("/mute/toggle", post(mute_control))
-        .route("/input/hdmi/:port", post(input_hdmi_control))
+        .route("/input/hdmi/{port}", post(input_hdmi_control))
         .with_state(shared_port);
 
     let addr = format!("{}:{}", host, port);
