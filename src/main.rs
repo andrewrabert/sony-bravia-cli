@@ -265,7 +265,7 @@ fn cli() -> Command {
         .subcommand(Command::new("status"))
         .subcommand(
             Command::new("http-server")
-                .arg(arg!(--port <PORT> "Port to listen on").default_value("3000").value_parser(clap::value_parser!(u16)))
+                .arg(arg!(--port <PORT> "Port to listen on").default_value("8000").value_parser(clap::value_parser!(u16)))
                 .arg(arg!(--host <HOST> "Host to bind to").default_value("127.0.0.1"))
         )
 }
