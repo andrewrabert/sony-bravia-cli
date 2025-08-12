@@ -19,6 +19,7 @@ const RESPONSE_HEADER: u8 = 0x70;
 const RESPONSE_ANSWER: u8 = 0x00;
 
 mod http;
+mod mcp;
 
 fn checksum(command: &[u8]) -> u8 {
     let s: u8 = command.iter().fold(0u8, |acc, &b| acc.wrapping_add(b));
@@ -247,6 +248,7 @@ fn cli() -> Command {
                 .arg(arg!(--port <PORT> "Port to listen on").default_value("8000").value_parser(clap::value_parser!(u16)))
                 .arg(arg!(--host <HOST> "Host to bind to").default_value("127.0.0.1"))
         )
+        .subcommand(Command::new("mcp-server"))
 }
 
 
@@ -261,6 +263,14 @@ async fn main() {
 
         if let Err(e) = http::start_http_server(device_path, host, port).await {
             eprintln!("Server error: {}", e);
+            std::process::exit(1);
+        }
+        return;
+    }
+
+    if let Some(("mcp-server", _)) = matches.subcommand() {
+        if let Err(e) = mcp::start_mcp_server(device_path).await {
+            eprintln!("MCP server error: {}", e);
             std::process::exit(1);
         }
         return;
