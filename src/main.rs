@@ -276,6 +276,7 @@ async fn main() {
         return;
     }
 
+
     let mut port = serialport::new(&device_path, 9600)
         .timeout(Duration::from_millis(500))
         .open()
