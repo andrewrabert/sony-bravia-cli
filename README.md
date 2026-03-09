@@ -150,3 +150,7 @@ sony-bravia-cli --dev /dev/ttyUSB0 --http-server --http-host 0.0.0.0 --http-port
 | `/sound/speaker/{toggle\|on\|off}` | Speaker control |
 | `/language/{eng\|jpn\|...}` | Set language |
 | `/sircs/{button}` | SIRCS remote emulation |
+
+## Protocol Documentation
+
+Sony RS-232C specifications: https://github.com/andrewrabert/sony-bravia-rs232c-documentation
