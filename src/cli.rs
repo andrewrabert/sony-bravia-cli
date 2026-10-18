@@ -1,7 +1,7 @@
 use clap::Parser;
 
 #[derive(Parser, Debug)]
-#[command(name = "sony-bravia")]
+#[command(name = sony_bravia_cli::APP_NAME, version = sony_bravia_cli::APP_VERSION)]
 #[command(about = "Sony Bravia TV RS232 control")]
 pub struct Cli {
     /// Serial device path
