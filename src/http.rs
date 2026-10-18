@@ -207,11 +207,19 @@ async fn get_mute(State(app_state): State<AppState>) -> Result<Json<MuteResponse
     }
 }
 
-async fn get_product_info(State(app_state): State<AppState>) -> Result<Json<ProductInfoResponse>, StatusCode> {
+async fn get_product_info(
+    State(app_state): State<AppState>,
+) -> Result<Json<ProductInfoResponse>, StatusCode> {
     let mut transport = app_state.transport.lock().unwrap();
-    let info1 = transport.query::<ProductInfo1>().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    let info2 = transport.query::<ProductInfo2>().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    let info3 = transport.query::<ProductInfo3>().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let info1 = transport
+        .query::<ProductInfo1>()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let info2 = transport
+        .query::<ProductInfo2>()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let info3 = transport
+        .query::<ProductInfo3>()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     Ok(Json(ProductInfoResponse {
         info1: String::from_utf8_lossy(&info1).to_string(),
@@ -220,7 +228,9 @@ async fn get_product_info(State(app_state): State<AppState>) -> Result<Json<Prod
     }))
 }
 
-async fn get_device_id(State(app_state): State<AppState>) -> Result<Json<DeviceIdResponse>, StatusCode> {
+async fn get_device_id(
+    State(app_state): State<AppState>,
+) -> Result<Json<DeviceIdResponse>, StatusCode> {
     let mut transport = app_state.transport.lock().unwrap();
     match transport.query::<IdCommand>() {
         Ok(id) => Ok(Json(DeviceIdResponse {
@@ -273,7 +283,14 @@ async fn standby_control(
     match transport.execute::<Standby>(&action) {
         Ok(_) => Ok(Json(ApiResponse {
             success: true,
-            message: format!("Standby {}", if matches!(action, StandbyAction::Enable) { "enabled" } else { "disabled" }),
+            message: format!(
+                "Standby {}",
+                if matches!(action, StandbyAction::Enable) {
+                    "enabled"
+                } else {
+                    "disabled"
+                }
+            ),
         })),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
@@ -465,7 +482,9 @@ async fn picture_mode_control(
     }
 }
 
-async fn picture_mode_toggle(State(app_state): State<AppState>) -> Result<Json<ApiResponse>, StatusCode> {
+async fn picture_mode_toggle(
+    State(app_state): State<AppState>,
+) -> Result<Json<ApiResponse>, StatusCode> {
     let mut transport = app_state.transport.lock().unwrap();
     match transport.execute::<PictureMode>(&PictureModeAction::Toggle) {
         Ok(_) => Ok(Json(ApiResponse {
@@ -662,7 +681,14 @@ async fn hue_red_control(
     match transport.execute::<Hue>(&action) {
         Ok(_) => Ok(Json(ApiResponse {
             success: true,
-            message: format!("Hue red {}", if matches!(action, HueAction::Up(_)) { "up" } else { "down" }),
+            message: format!(
+                "Hue red {}",
+                if matches!(action, HueAction::Up(_)) {
+                    "up"
+                } else {
+                    "down"
+                }
+            ),
         })),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
@@ -698,7 +724,14 @@ async fn hue_green_control(
     match transport.execute::<Hue>(&action) {
         Ok(_) => Ok(Json(ApiResponse {
             success: true,
-            message: format!("Hue green {}", if matches!(action, HueAction::Up(_)) { "up" } else { "down" }),
+            message: format!(
+                "Hue green {}",
+                if matches!(action, HueAction::Up(_)) {
+                    "up"
+                } else {
+                    "down"
+                }
+            ),
         })),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
@@ -742,7 +775,9 @@ async fn picture_on(State(app_state): State<AppState>) -> Result<Json<ApiRespons
     }
 }
 
-async fn picture_toggle(State(app_state): State<AppState>) -> Result<Json<ApiResponse>, StatusCode> {
+async fn picture_toggle(
+    State(app_state): State<AppState>,
+) -> Result<Json<ApiResponse>, StatusCode> {
     let mut transport = app_state.transport.lock().unwrap();
     match transport.execute::<PictureOff>(&PictureOffAction::Toggle) {
         Ok(_) => Ok(Json(ApiResponse {
@@ -770,7 +805,14 @@ async fn cine_motion_control(
     match transport.execute::<CineMotion>(&action) {
         Ok(_) => Ok(Json(ApiResponse {
             success: true,
-            message: format!("Cine motion {}", if matches!(action, CineMotionAction::Off) { "off" } else { "on" }),
+            message: format!(
+                "Cine motion {}",
+                if matches!(action, CineMotionAction::Off) {
+                    "off"
+                } else {
+                    "on"
+                }
+            ),
         })),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
@@ -791,7 +833,9 @@ async fn input_toggle(State(app_state): State<AppState>) -> Result<Json<ApiRespo
 
 // === Display Toggle Route ===
 
-async fn display_toggle(State(app_state): State<AppState>) -> Result<Json<ApiResponse>, StatusCode> {
+async fn display_toggle(
+    State(app_state): State<AppState>,
+) -> Result<Json<ApiResponse>, StatusCode> {
     let mut transport = app_state.transport.lock().unwrap();
     match transport.execute::<Display>(&()) {
         Ok(_) => Ok(Json(ApiResponse {
@@ -905,7 +949,14 @@ async fn h_shift_control(
     match transport.execute::<HShift>(&action) {
         Ok(_) => Ok(Json(ApiResponse {
             success: true,
-            message: format!("H-shift {}", if matches!(action, HShiftAction::Up) { "up" } else { "down" }),
+            message: format!(
+                "H-shift {}",
+                if matches!(action, HShiftAction::Up) {
+                    "up"
+                } else {
+                    "down"
+                }
+            ),
         })),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
@@ -949,7 +1000,14 @@ async fn v_size_control(
     match transport.execute::<VSize>(&action) {
         Ok(_) => Ok(Json(ApiResponse {
             success: true,
-            message: format!("V-size {}", if matches!(action, VSizeAction::Up) { "up" } else { "down" }),
+            message: format!(
+                "V-size {}",
+                if matches!(action, VSizeAction::Up) {
+                    "up"
+                } else {
+                    "down"
+                }
+            ),
         })),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
@@ -993,7 +1051,14 @@ async fn v_shift_control(
     match transport.execute::<VShift>(&action) {
         Ok(_) => Ok(Json(ApiResponse {
             success: true,
-            message: format!("V-shift {}", if matches!(action, VShiftAction::Up) { "up" } else { "down" }),
+            message: format!(
+                "V-shift {}",
+                if matches!(action, VShiftAction::Up) {
+                    "up"
+                } else {
+                    "down"
+                }
+            ),
         })),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
