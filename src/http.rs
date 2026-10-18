@@ -137,7 +137,12 @@ pub async fn start_http_server(
         .with_state(state);
 
     let addr = format!("{}:{}", host, port);
-    println!("HTTP server listening on {}", addr);
+    println!(
+        "{} {} HTTP server listening on {}",
+        sony_bravia_cli::APP_NAME,
+        sony_bravia_cli::APP_VERSION,
+        addr
+    );
 
     let listener = TcpListener::bind(&addr).await?;
     axum::serve(listener, app).await?;

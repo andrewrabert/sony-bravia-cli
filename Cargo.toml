@@ -1,6 +1,6 @@
 [package]
 name = "sony-bravia-cli"
-version = "0.7.0"
+version = "0.8.0-dev"
 edition = "2024"
 
 [dependencies]
@@ -14,3 +14,6 @@ futures = "0.3"
 async-trait = "0.1"
 tokio-util = { version = "0.7", features = ["codec"] }
 thiserror = "2.0.17"
+
+[build-dependencies]
+vergen-gix = { version = "10", features = ["emit_and_set"] }
